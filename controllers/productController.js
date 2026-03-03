@@ -1,17 +1,19 @@
-exports.getProducts = (req, res, next) => {
+const Product = require("../models/Product");
+
+exports.getProducts = async (req, res, next) => {
   try {
-    res.json({ message: "All products" });
+    const products = await Product.find();
+    res.json(products);
   } catch (error) {
     next(error);
   }
 };
 
-exports.createProduct = (req, res, next) => {
+exports.createProduct = async (req, res, next) => {
   try {
-    res.status(201).json({
-      message: "Product created",
-      data: req.body
-    });
+    const product = new Product(req.body);
+    const savedProduct = await product.save();
+    res.status(201).json(savedProduct);
   } catch (error) {
     next(error);
   }
