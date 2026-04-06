@@ -10,6 +10,23 @@ const generateToken = (id) =>
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+
+  // Input validation
+  if (!name || !name.trim()) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+  const atIdx = email.indexOf("@");
+  const isValidEmail =
+    atIdx > 0 && atIdx < email.length - 1 && email.includes(".", atIdx + 2);
+  if (!email || !isValidEmail) {
+    return res.status(400).json({ message: "Valid email is required" });
+  }
+  if (!password || password.length < 6) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 6 characters" });
+  }
+
   try {
     const exists = await Student.findOne({ email });
     if (exists) {
@@ -31,6 +48,11 @@ router.post("/register", async (req, res) => {
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
   try {
     const student = await Student.findOne({ email });
     if (student && (await student.matchPassword(password))) {

@@ -13,7 +13,15 @@ const studentSchema = new mongoose.Schema(
       required: [true, "Email is required"],
       unique: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
+      validate: {
+        validator: function (v) {
+          const atIdx = v.indexOf("@");
+          return (
+            atIdx > 0 && atIdx < v.length - 1 && v.includes(".", atIdx + 2)
+          );
+        },
+        message: "Please enter a valid email",
+      },
     },
     password: {
       type: String,
